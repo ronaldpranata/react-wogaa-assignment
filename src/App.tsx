@@ -1,12 +1,12 @@
-import { Header } from './components/Header/Header';
-import { TaskList } from './components/TaskList/TaskList';
+import { Header } from "./components/layout/Header/Header";
+import { SentimentWidget } from "./components/features/SentimentWidget/SentimentWidget";
 
 export default function App() {
   return (
     <div className="app">
       <Header />
       <main>
-        <TaskList />
+        <SentimentWidget />
       </main>
     </div>
   );

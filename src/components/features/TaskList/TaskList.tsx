@@ -1,19 +1,18 @@
-
-import React, { useState } from 'react';
-import { useTasks } from '../../hooks/useTasks';
-import { Card } from '../Card/Card';
-import { Button } from '../Button/Button';
-import styles from './TaskList.module.css';
+import React, { useState } from "react";
+import { useTasks } from "../../../hooks/useTasks";
+import { Card } from "../../ui/Card/Card";
+import { Button } from "../../ui/Button/Button";
+import styles from "./TaskList.module.css";
 
 export const TaskList: React.FC = () => {
   const { tasks, addTask, toggleTask, deleteTask } = useTasks();
-  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState("");
 
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (newTaskTitle.trim()) {
       addTask(newTaskTitle.trim());
-      setNewTaskTitle('');
+      setNewTaskTitle("");
     }
   };
 
@@ -36,7 +35,10 @@ export const TaskList: React.FC = () => {
 
       <div className={styles.list}>
         {tasks.map((task) => (
-          <Card key={task.id} className={`${styles.taskCard} ${task.completed ? styles.completed : ''}`}>
+          <Card
+            key={task.id}
+            className={`${styles.taskCard} ${task.completed ? styles.completed : ""}`}
+          >
             <div className={styles.taskContent}>
               <input
                 type="checkbox"
@@ -46,10 +48,7 @@ export const TaskList: React.FC = () => {
               />
               <span className={styles.taskTitle}>{task.title}</span>
             </div>
-            <Button 
-              variant="danger" 
-              onClick={() => deleteTask(task.id)}
-            >
+            <Button variant="danger" onClick={() => deleteTask(task.id)}>
               Delete
             </Button>
           </Card>

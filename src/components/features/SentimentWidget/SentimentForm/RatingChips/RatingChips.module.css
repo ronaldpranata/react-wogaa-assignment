@@ -1,0 +1,13 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chipArea {
+  padding-left: 10px;
+  padding-right: 10px;
+}

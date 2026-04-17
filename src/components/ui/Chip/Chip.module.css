@@ -1,0 +1,28 @@
+.chip {
+  padding: 0.4rem 0.9rem;
+  border: 2px solid var(--primary-color, #3b82f6);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-color, #111);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.chip:hover {
+  background: var(--primary-color, #3b82f6);
+  color: #fff;
+}
+
+.active {
+  background: var(--primary-color, #3b82f6);
+  color: #fff;
+}
+
+.disabled {
+  border-color: var(--border-color, #ccc);
+  color: var(--border-color, #ccc);
+  cursor: not-allowed;
+}
