@@ -1,0 +1,16 @@
+/* [project]/src/components/Card/Card.module.css [app-client] (css) */
+.Card-module__ckVvha__card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 6px #0000001a;
+}
+
+.Card-module__ckVvha__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px #00000026;
+}
+
+/*# sourceMappingURL=src_components_Card_Card_module_css_0w3-wzy._.single.css.map*/

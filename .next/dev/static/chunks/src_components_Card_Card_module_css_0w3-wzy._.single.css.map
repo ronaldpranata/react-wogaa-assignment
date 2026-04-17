@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/components/Card/Card.module.css"],"sourcesContent":[".card {\n  background-color: var(--card-bg);\n  border-radius: 8px;\n  padding: 1.5rem;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n  transition: transform 0.2s ease, box-shadow 0.2s ease;\n  border: 1px solid var(--border-color);\n}\n\n.card:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;;AASA"}}]
+}

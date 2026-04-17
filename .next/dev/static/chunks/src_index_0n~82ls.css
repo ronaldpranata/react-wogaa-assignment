@@ -1,0 +1,37 @@
+/* [project]/src/index.css [app-client] (css) */
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --text-color: #1f2937;
+  --background-color: #f3f4f6;
+  --card-bg: #fff;
+  --border-color: #e5e7eb;
+  --background-hover: #f9fafb;
+}
+
+[data-theme="dark"] {
+  --primary-color: #60a5fa;
+  --primary-hover: #3b82f6;
+  --text-color: #f9fafb;
+  --background-color: #111827;
+  --card-bg: #1f2937;
+  --border-color: #374151;
+  --background-hover: #374151;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
+  line-height: 1.5;
+  transition: background-color .3s, color .3s;
+}
+
+/*# sourceMappingURL=src_index_0n~82ls.css.map*/
