@@ -1,4 +1,3 @@
-"use client";
 import React, { createContext, useReducer, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Task, TaskAction, TaskContextType } from '../types/task';
@@ -10,7 +9,7 @@ const initialState: Task[] = [];
 const taskReducer = (state: Task[], action: TaskAction): Task[] => {
   switch (action.type) {
     case 'ADD_TASK':
-      return [...state, action.payload as Task];
+      return [...state, action.payload];
     case 'TOGGLE_TASK':
       return state.map((task) =>
         task.id === action.payload ? { ...task, completed: !task.completed } : task
@@ -27,71 +26,39 @@ const taskReducer = (state: Task[], action: TaskAction): Task[] => {
 export const TaskProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [tasks, dispatch] = useReducer(taskReducer, initialState);
 
-  // Fetch all tasks on mount
+  // Load from localStorage on mount
   useEffect(() => {
-    fetch('/api/tasks')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          dispatch({ type: 'SET_TASKS', payload: data });
-        } else {
-          console.error('API Error:', data);
-          dispatch({ type: 'SET_TASKS', payload: [] });
-        }
-      })
-      .catch((err) => console.error("Failed to load tasks", err));
+    try {
+      const savedTasks = localStorage.getItem('tasks');
+      if (savedTasks) {
+        dispatch({ type: 'SET_TASKS', payload: JSON.parse(savedTasks) });
+      }
+    } catch (e) {
+      console.error('Failed to load tasks from localStorage', e);
+    }
   }, []);
 
-  const addTask = async (title: string) => {
-    // Generate an optimistic ID so the UI updates immediately
-    const optimisticTask: Task = {
+  // Save to localStorage whenever tasks change
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  const addTask = (title: string) => {
+    const newTask: Task = {
       id: crypto.randomUUID(),
       title,
       completed: false,
       createdAt: new Date().toISOString(),
     };
-    
-    // 1. Optimistic Update
-    dispatch({ type: 'ADD_TASK', payload: optimisticTask as any });
-
-    // 2. Persist to API
-    try {
-      const res = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title }),
-      });
-      const savedTask = await res.json();
-      
-      // Optionally replace the optimistic ID with the real DB ID here,
-      // But we can also just fetch all tasks to sync perfectly:
-      // (This guarantees order and real IDs)
-      const allRes = await fetch('/api/tasks');
-      const allTasks = await allRes.json();
-      if (Array.isArray(allTasks)) {
-        dispatch({ type: 'SET_TASKS', payload: allTasks });
-      }
-
-    } catch (error) {
-      console.error("Failed to add task", error);
-      // Rollback logic could go here
-    }
+    dispatch({ type: 'ADD_TASK', payload: newTask });
   };
 
-  const toggleTask = async (id: string) => {
-    // 1. Optimistic Update
+  const toggleTask = (id: string) => {
     dispatch({ type: 'TOGGLE_TASK', payload: id });
-    
-    // 2. API Request
-    fetch(`/api/tasks/${id}`, { method: 'PATCH' }).catch(console.error);
   };
 
-  const deleteTask = async (id: string) => {
-    // 1. Optimistic Update
+  const deleteTask = (id: string) => {
     dispatch({ type: 'DELETE_TASK', payload: id });
-    
-    // 2. API Request
-    fetch(`/api/tasks/${id}`, { method: 'DELETE' }).catch(console.error);
   };
 
   return (

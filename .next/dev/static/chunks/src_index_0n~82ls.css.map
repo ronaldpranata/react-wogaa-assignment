@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///Users/ronaldpranata/react-wogaa-assignment/src/index.css"],"sourcesContent":[":root {\n  --primary-color: #3b82f6;\n  --primary-hover: #2563eb;\n  --text-color: #1f2937;\n  --background-color: #f3f4f6;\n  --card-bg: #ffffff;\n  --border-color: #e5e7eb;\n  --background-hover: #f9fafb;\n}\n\n[data-theme='dark'] {\n  --primary-color: #60a5fa;\n  --primary-hover: #3b82f6;\n  --text-color: #f9fafb;\n  --background-color: #111827;\n  --card-bg: #1f2937;\n  --border-color: #374151;\n  --background-hover: #374151;\n}\n\n* {\n  box-sizing: border-box;\n  margin: 0;\n  padding: 0;\n}\n\nbody {\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,\n    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;\n  background-color: var(--background-color);\n  color: var(--text-color);\n  transition: background-color 0.3s ease, color 0.3s ease;\n  line-height: 1.5;\n  min-height: 100vh;\n}\n"],"names":[],"mappings":"AAAA;;;;;;;;;;AAUA;;;;;;;;;;AAUA;;;;;;AAMA"}}]
-}

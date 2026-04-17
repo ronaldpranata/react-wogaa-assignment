@@ -6,14 +6,14 @@ export interface Task {
 }
 
 export type TaskAction =
-  | { type: 'ADD_TASK'; payload: Pick<Task, 'title'> }
+  | { type: 'ADD_TASK'; payload: Task }
   | { type: 'TOGGLE_TASK'; payload: string }
   | { type: 'DELETE_TASK'; payload: string }
   | { type: 'SET_TASKS'; payload: Task[] };
 
 export interface TaskContextType {
   tasks: Task[];
-  addTask: (title: string) => Promise<void>;
-  toggleTask: (id: string) => Promise<void>;
-  deleteTask: (id: string) => Promise<void>;
+  addTask: (title: string) => void;
+  toggleTask: (id: string) => void;
+  deleteTask: (id: string) => void;
 }
