@@ -17,5 +17,5 @@ export type SentimentAction =
 export interface SentimentContextType {
   sentiments: Sentiment[];
   summaryStats: SummaryStats;
-  addSentiment: (rating: number, comment: string) => void;
+  addSentiment: (rating: number, comment: string) => Promise<void>;
 }

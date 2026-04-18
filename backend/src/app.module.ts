@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ThrottlerModule } from '@nestjs/throttler';
-import appConfig, { AppConfig } from './config/app.config';
-import { ItemsModule } from './items/items.module';
-import { Item } from './items/item.entity';
-import * as path from 'path';
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ThrottlerModule } from "@nestjs/throttler";
+import appConfig, { AppConfig } from "./config/app.config";
+
+import { SentimentsModule } from "./sentiments/sentiments.module";
+import { Sentiment } from "./sentiments/sentiment.entity";
+import * as path from "path";
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import * as path from 'path';
     // directly via CI/CD secrets.
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: ".env",
       load: [appConfig],
     }),
 
@@ -24,7 +25,7 @@ import * as path from 'path';
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const app = config.get<AppConfig>('app');
+        const app = config.get<AppConfig>("app");
         return [
           {
             ttl: (app?.throttleTtlSeconds ?? 60) * 1000, // ms
@@ -38,22 +39,25 @@ import * as path from 'path';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const app = config.get<AppConfig>('app');
-        const dbPath = path.resolve(process.cwd(), app?.dbPath ?? 'database.sqlite');
+        const app = config.get<AppConfig>("app");
+        const dbPath = path.resolve(
+          process.cwd(),
+          app?.dbPath ?? "database.sqlite",
+        );
         return {
-          type: 'sqljs',
+          type: "sqljs",
           location: dbPath,
           autoSave: true,
-          entities: [Item],
+          entities: [Sentiment],
           // synchronize:true is acceptable in dev; use migrations in production
-          synchronize: app?.nodeEnv !== 'production',
-          logging: app?.nodeEnv === 'development',
+          synchronize: app?.nodeEnv !== "production",
+          logging: app?.nodeEnv === "development",
         };
       },
     }),
 
     // ─── Feature modules ────────────────────────────────────────────────────
-    ItemsModule,
+    SentimentsModule,
   ],
 })
 export class AppModule {}

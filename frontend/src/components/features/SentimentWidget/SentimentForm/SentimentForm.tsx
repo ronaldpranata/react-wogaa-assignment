@@ -11,19 +11,25 @@ export const SentimentForm: React.FC = () => {
   const { addSentiment } = useSentiments();
   const [isLocked, setIsLocked] = useState(false);
   const [comment, setComment] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const ratings = [1, 2, 3, 4, 5];
-  const handleSubmitForm = (e: React.FormEvent) => {
+
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLocked(true);
-    addSentiment(currentRating!, comment);
-    alert("Thank you for your feedback.");
-    setTimeout(() => {
-      setIsLocked(false);
-    }, 3000);
-    if (comment.trim()) {
+    setError(null);
+
+    try {
+      await addSentiment(currentRating!, comment);
+      alert("Thank you for your feedback.");
       setComment("");
+      setCurrentRating(null);
+    } catch {
+      setError("Failed to save your feedback. Please try again.");
+    } finally {
+      // Brief cooldown to prevent double-submit
+      setTimeout(() => setIsLocked(false), 1000);
     }
-    setCurrentRating(null);
   };
 
   return (
@@ -42,6 +48,11 @@ export const SentimentForm: React.FC = () => {
             placeholder="Enter your comment..."
             disabled={isLocked}
           />
+          {error && (
+            <p role="alert" style={{ color: "red", fontSize: "0.875rem" }}>
+              {error}
+            </p>
+          )}
           <SubmitButton
             disabled={!comment.trim() || currentRating === null || isLocked}
           />
