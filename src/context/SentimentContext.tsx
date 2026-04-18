@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useEffect } from "react";
+import React, { createContext, useReducer, useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 import type {
   Sentiment,
@@ -19,58 +19,66 @@ const SentimentReducer = (
   switch (action.type) {
     case "ADD_SENTIMENT":
       return [...state, action.payload];
-    case "TOGGLE_SENTIMENT":
-      return state.map((Sentiment) =>
-        Sentiment.id === action.payload
-          ? { ...Sentiment, completed: !Sentiment.completed }
-          : Sentiment,
-      );
-    case "DELETE_SENTIMENT":
-      return state.filter((Sentiment) => Sentiment.id !== action.payload);
-    case "SET_SENTIMENTS":
-      return action.payload as Sentiment[];
     default:
       return state;
   }
 };
 
+const initSentiments = (fallbackState: Sentiment[]) => {
+  try {
+    const savedSentiments = localStorage.getItem("sentiments");
+
+    if (savedSentiments) {
+      return JSON.parse(savedSentiments);
+    }
+    return fallbackState;
+  } catch (e) {
+    console.error("Failed to load Sentiments from localStorage", e);
+    return fallbackState;
+  }
+};
 export const SentimentProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [Sentiments, dispatch] = useReducer(SentimentReducer, initialState);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const savedSentiments = localStorage.getItem("ratings");
-      if (savedSentiments) {
-        dispatch({
-          type: "SET_SENTIMENTS",
-          payload: JSON.parse(savedSentiments),
-        });
-      }
-    } catch (e) {
-      console.error("Failed to load Sentiments from localStorage", e);
-    }
-  }, []);
+  const [sentiments, dispatch] = useReducer(
+    SentimentReducer,
+    initialState,
+    initSentiments,
+  );
 
   // Save to localStorage whenever Sentiments change
   useEffect(() => {
-    localStorage.setItem("Sentiments", JSON.stringify(Sentiments));
-  }, [Sentiments]);
+    localStorage.setItem("sentiments", JSON.stringify(sentiments));
+  }, [sentiments]);
 
-  const addSentiment = (title: string) => {
+  const addSentiment = (rating: number, comment: string) => {
     const newSentiment: Sentiment = {
       id: crypto.randomUUID(),
-      title,
-      completed: false,
+      rating: rating,
+      comment: comment,
       createdAt: new Date().toISOString(),
     };
     dispatch({ type: "ADD_SENTIMENT", payload: newSentiment });
   };
 
+  const summaryStats = useMemo(() => {
+    const total = sentiments.length;
+    if (total === 0) return { totalSentiments: 0, averageRating: 0 };
+
+    const totalRating = sentiments.reduce(
+      (sum, sentiment) => sum + sentiment.rating,
+      0,
+    );
+    return {
+      totalSentiments: total,
+      averageRating: Number((totalRating / total).toFixed(1)),
+    };
+  }, [sentiments]);
+
   return (
-    <SentimentContext.Provider value={{ Sentiments, addSentiment }}>
+    <SentimentContext.Provider
+      value={{ sentiments, summaryStats, addSentiment }}
+    >
       {children}
     </SentimentContext.Provider>
   );

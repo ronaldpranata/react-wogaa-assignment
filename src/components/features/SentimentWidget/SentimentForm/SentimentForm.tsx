@@ -4,15 +4,18 @@ import styles from "./SentimentForm.module.css";
 import { RatingChips } from "./RatingChips/RatingChips";
 import { CommentBox } from "./CommentBox/CommentBox";
 import { SubmitButton } from "./SubmitButton/SubmitButton";
+import { useSentiments } from "../../../../hooks/useSentiments";
 
 export const SentimentForm: React.FC = () => {
   const [currentRating, setCurrentRating] = useState<number | null>(null);
+  const { addSentiment } = useSentiments();
   const [isLocked, setIsLocked] = useState(false);
   const [comment, setComment] = useState("");
   const ratings = [1, 2, 3, 4, 5];
   const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLocked(true);
+    addSentiment(currentRating!, comment);
     alert("Thank you for your feedback.");
     setTimeout(() => {
       setIsLocked(false);
