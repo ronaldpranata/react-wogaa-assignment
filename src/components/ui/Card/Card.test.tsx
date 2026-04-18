@@ -19,4 +19,26 @@ describe('Card Component', () => {
     );
     expect(container.firstChild).toHaveClass('custom-class');
   });
+
+  it('renders without a className prop (uses default empty string)', () => {
+    const { container } = render(
+      <Card>
+        <p>No class</p>
+      </Card>
+    );
+    // Should still render without errors and contain the child
+    expect(container.firstChild).toBeInTheDocument();
+    expect(screen.getByText('No class')).toBeInTheDocument();
+  });
+
+  it('renders multiple children', () => {
+    render(
+      <Card>
+        <p>First child</p>
+        <p>Second child</p>
+      </Card>
+    );
+    expect(screen.getByText('First child')).toBeInTheDocument();
+    expect(screen.getByText('Second child')).toBeInTheDocument();
+  });
 });
