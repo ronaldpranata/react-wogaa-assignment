@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { ThemeProvider, ThemeContext } from "./ThemeContext";
 import { useContext } from "react";
 
@@ -20,7 +20,7 @@ describe("ThemeContext", () => {
     render(
       <ThemeProvider>
         <ThemeConsumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByTestId("theme")).toHaveTextContent("light");
   });
@@ -29,7 +29,7 @@ describe("ThemeContext", () => {
     render(
       <ThemeProvider>
         <ThemeConsumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     fireEvent.click(screen.getByRole("button", { name: /toggle/i }));
     expect(screen.getByTestId("theme")).toHaveTextContent("dark");
@@ -39,7 +39,7 @@ describe("ThemeContext", () => {
     render(
       <ThemeProvider>
         <ThemeConsumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     fireEvent.click(screen.getByRole("button", { name: /toggle/i }));
     fireEvent.click(screen.getByRole("button", { name: /toggle/i }));
@@ -50,7 +50,7 @@ describe("ThemeContext", () => {
     render(
       <ThemeProvider>
         <ThemeConsumer />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(document.documentElement.getAttribute("data-theme")).toBe("light");
     fireEvent.click(screen.getByRole("button", { name: /toggle/i }));

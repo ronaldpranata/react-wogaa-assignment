@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { SentimentProvider, SentimentContext } from "./SentimentContext";
 
 // --- Helper consumer ---
@@ -31,7 +31,7 @@ const renderProvider = () =>
   render(
     <SentimentProvider>
       <SentimentConsumer />
-    </SentimentProvider>
+    </SentimentProvider>,
   );
 
 describe("SentimentContext", () => {
@@ -59,7 +59,7 @@ describe("SentimentContext", () => {
     fireEvent.click(screen.getByTestId("add-btn"));
     expect(screen.getAllByTestId("sentiment-item")).toHaveLength(1);
     expect(screen.getByTestId("sentiment-item")).toHaveTextContent(
-      "Test comment"
+      "Test comment",
     );
   });
 
@@ -84,7 +84,7 @@ describe("SentimentContext", () => {
     render(
       <SentimentProvider>
         <MultiAdder />
-      </SentimentProvider>
+      </SentimentProvider>,
     );
     fireEvent.click(screen.getByText("Add 3"));
     fireEvent.click(screen.getByText("Add 5"));
@@ -114,7 +114,7 @@ describe("SentimentContext", () => {
 
     renderProvider();
     expect(screen.getByTestId("sentiment-item")).toHaveTextContent(
-      "Seeded comment"
+      "Seeded comment",
     );
   });
 });
