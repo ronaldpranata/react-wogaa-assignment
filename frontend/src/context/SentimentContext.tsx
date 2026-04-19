@@ -1,69 +1,44 @@
-import React, {
-  createContext,
-  useReducer,
-  useEffect,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { createContext, useMemo, useCallback } from "react";
 import type { ReactNode } from "react";
-import type {
-  Sentiment,
-  SentimentAction,
-  SentimentContextType,
-} from "../types/sentiment";
+import type { SentimentContextType } from "../types/sentiment";
 import * as sentimentsApi from "../api/sentiments";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const SentimentContext = createContext<SentimentContextType | undefined>(
   undefined,
 );
-
-// ─── Reducer ──────────────────────────────────────────────────────────────
-
-const SentimentReducer = (
-  state: Sentiment[],
-  action: SentimentAction,
-): Sentiment[] => {
-  switch (action.type) {
-    case "ADD_SENTIMENT":
-      // Prepend so newest are first (matches API ordering)
-      return [action.payload, ...state];
-    case "SET_SENTIMENTS":
-      return action.payload;
-    default:
-      return state;
-  }
-};
 
 // ─── Provider ─────────────────────────────────────────────────────────────
 
 export const SentimentProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [sentiments, dispatch] = useReducer(SentimentReducer, []);
+  const queryClient = useQueryClient();
 
-  /**
-   * On mount: fetch all persisted sentiments from the backend.
-   * This replaces the old localStorage initialisation.
-   */
-  useEffect(() => {
-    sentimentsApi
-      .getAll()
-      .then((data) => dispatch({ type: "SET_SENTIMENTS", payload: data }))
-      .catch((err) =>
-        console.error("Failed to load sentiments from backend:", err),
-      );
-  }, []);
+  // 1. THE GET: Replaces your useEffect and 'SET_SENTIMENTS' reducer action
+  const { data: sentiments = [] } = useQuery({
+    queryKey: ["sentiments"],
+    queryFn: sentimentsApi.getAll,
+  });
 
-  const addSentiment = useCallback(async (rating: number, comment: string) => {
-    try {
-      const saved = await sentimentsApi.create({ rating, comment });
-      dispatch({ type: "ADD_SENTIMENT", payload: saved });
-    } catch (err) {
+  // 2. THE POST: Replaces your manual fetch and 'ADD_SENTIMENT' reducer action
+  const mutation = useMutation({
+    mutationFn: (newSentiment: { rating: number; comment: string }) =>
+      sentimentsApi.create(newSentiment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sentiments"] });
+    },
+    onError: (err) => {
       console.error("Failed to save sentiment:", err);
-
-      throw err;
-    }
-  }, []);
+    },
+  });
+  const addSentiment = useCallback(
+    async (rating: number, comment: string) => {
+      // .mutateAsync allows your UI form to still use try/catch block!
+      await mutation.mutateAsync({ rating, comment });
+    },
+    [mutation],
+  );
 
   const summaryStats = useMemo(() => {
     const total = sentiments.length;

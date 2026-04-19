@@ -10,10 +10,6 @@ export interface SummaryStats {
   averageRating: number;
 }
 
-export type SentimentAction =
-  | { type: "ADD_SENTIMENT"; payload: Sentiment }
-  | { type: "SET_SENTIMENTS"; payload: Sentiment[] };
-
 export interface SentimentContextType {
   sentiments: Sentiment[];
   summaryStats: SummaryStats;

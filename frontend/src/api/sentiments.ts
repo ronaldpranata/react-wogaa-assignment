@@ -71,7 +71,7 @@ export const getOne = (id: string): Promise<Sentiment> =>
 
 /** POST /v1/sentiments — submit a new rating+comment */
 export const create = (payload: CreateSentimentPayload): Promise<Sentiment> =>
-  request<Sentiment>("/v1/sentiments/", {
+  request<Sentiment>("/v1/sentiments", {
     method: "POST",
     body: JSON.stringify(payload),
   });

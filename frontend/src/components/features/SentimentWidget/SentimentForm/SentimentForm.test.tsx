@@ -1,8 +1,26 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { SentimentForm } from "./SentimentForm";
 import { SentimentProvider } from "../../../../context/SentimentContext";
 import { ThemeProvider } from "../../../../context/ThemeContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Mock the sentiments API
+jest.mock("../../../../api/sentiments", () => ({
+  getAll: jest.fn().mockResolvedValue([]),
+  create: jest.fn().mockResolvedValue({
+    id: "1",
+    rating: 5,
+    comment: "Perfect!",
+    createdAt: new Date().toISOString(),
+  }),
+}));
 
 // SentimentForm calls window.alert on submit — mock it globally for this suite
 beforeAll(() => {
@@ -20,21 +38,32 @@ afterAll(() => {
 });
 
 // Helper: wraps SentimentForm in the required context providers
-const renderForm = () =>
-  render(
-    <ThemeProvider>
-      <SentimentProvider>
-        <SentimentForm />
-      </SentimentProvider>
-    </ThemeProvider>
+const renderForm = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <SentimentProvider>
+          <SentimentForm />
+        </SentimentProvider>
+      </ThemeProvider>
+    </QueryClientProvider>,
   );
+};
 
 describe("SentimentForm Component", () => {
   it("renders RatingChips (1-5 buttons)", () => {
     renderForm();
-    const chips = screen.getAllByRole("button").filter((btn) =>
-      ["1", "2", "3", "4", "5"].includes(btn.textContent ?? "")
-    );
+    const chips = screen
+      .getAllByRole("button")
+      .filter((btn) =>
+        ["1", "2", "3", "4", "5"].includes(btn.textContent ?? ""),
+      );
     expect(chips).toHaveLength(5);
   });
 
@@ -73,9 +102,7 @@ describe("SentimentForm Component", () => {
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "Excellent!" },
     });
-    expect(
-      screen.getByRole("button", { name: /submit/i })
-    ).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /submit/i })).not.toBeDisabled();
   });
 
   it("shows an alert on successful submission", async () => {
@@ -87,7 +114,9 @@ describe("SentimentForm Component", () => {
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
     });
-    expect(window.alert).toHaveBeenCalledWith("Thank you for your feedback.");
+    await waitFor(() => {
+      expect(window.alert).toHaveBeenCalledWith("Thank you for your feedback.");
+    });
   });
 
   it("clears the comment field after submission", async () => {
@@ -99,8 +128,11 @@ describe("SentimentForm Component", () => {
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
     });
-    await waitFor(() =>
-      expect(screen.getByRole("textbox")).toHaveValue("")
+    await waitFor(
+      () => {
+        expect(screen.getByRole("textbox")).toHaveValue("");
+      },
+      { timeout: 5000 },
     );
   });
 

@@ -18,16 +18,15 @@ export const SentimentForm: React.FC = () => {
     e.preventDefault();
     setIsLocked(true);
     setError(null);
-
     try {
       await addSentiment(currentRating!, comment);
+
       alert("Thank you for your feedback.");
       setComment("");
       setCurrentRating(null);
     } catch {
       setError("Failed to save your feedback. Please try again.");
     } finally {
-      // Brief cooldown to prevent double-submit
       setTimeout(() => setIsLocked(false), 1000);
     }
   };
